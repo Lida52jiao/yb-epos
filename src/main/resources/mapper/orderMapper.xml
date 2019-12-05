@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjkj.mapper.OrderEntityMapper">
+    <!-- 回收策略为先进先出 --> <!-- 自动刷新时间60s --><!-- 最多缓存512个引用对象 -->
+    <!-- <cache eviction="FIFO" flushInterval="30000" size="512" readOnly="false" /> --> <!-- 只读 -->
+
+    <select id="findOrderByTime" resultType="com.yjkj.entity.OrderEntity">
+        SELECT *
+        FROM epos_order
+        <where>
+            1=1
+            <if test="orderNo != '' and orderNo != null">
+                AND orderNo = #{orderNo}
+            </if>
+            <if test="phone != '' and phone != null">
+                AND phone = #{phone}
+            </if>
+            <if test="name != '' and name != null">
+                AND name = #{name}
+            </if>
+            <if test="state != '' and state != null">
+                AND state = #{state}
+            </if>
+            <if test="merchantId != '' and merchantId != null">
+                AND merchantId = #{merchantId}
+            </if>
+            <if test="agentId != '' and agentId != null">
+                AND agentId = #{agentId}
+            </if>
+            <if test="institutionId != '' and institutionId != null">
+                AND institutionId = #{institutionId}
+            </if>
+            <if test="appId != '' and appId != null">
+                AND appId = #{appId}
+            </if>
+            <if test="aisleCode != '' and aisleCode != null">
+                AND aisleCode = #{aisleCode}
+            </if>
+            <if test="startTime != '' and startTime != null">
+                AND createTime &gt; #{startTime}
+            </if>
+            <if test="finishTime != '' and finishTime != null">
+                AND createTime &lt; #{finishTime}
+            </if>
+        </where>
+    </select>
+    <select id="amountCount" resultType="com.yjkj.entity.param.PlanAmountCount">
+        SELECT count(orderNo) AS number,SUM(amount) AS totalAmount ,SUM(d0Fee) AS d0Fee
+        FROM epos_order
+        WHERE
+        agentId in ( ${agentIds} )
+        <if test="aisleCode!=null and aisleCode!=''">
+            and  aisleCode= #{aisleCode}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and  createTime &gt; #{startTime}
+        </if>
+        <if test="finishTime!=null and finishTime!=''">
+            and  createTime &lt; #{finishTime}
+        </if>
+        and state=3
+    </select>
+    <select id="amountCount2" resultType="com.yjkj.entity.param.PlanAmountCount">
+        SELECT count(orderNo )AS number,SUM(amount) AS totalAmount ,SUM(d0Fee) AS d0Fee
+        FROM epos_order
+        WHERE
+        1=1
+        <if test="institutionId != '' and institutionId != null">
+            AND institutionId = #{institutionId}
+        </if>
+        <if test="aisleCode!=null and aisleCode!=''">
+            and  aisleCode= #{aisleCode}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and  createTime &gt; #{startTime}
+        </if>
+        <if test="finishTime!=null and finishTime!=''">
+            and  createTime &lt; #{finishTime}
+        </if>
+        and state=3
+    </select>
+</mapper>
